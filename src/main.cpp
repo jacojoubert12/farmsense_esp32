@@ -162,9 +162,11 @@ void setup() {
   InitWiFi();
   LED_on();
   if ((bootCount-1) % cam_capture_mod_value == 0) {
+    Serial.println("Setting up camera, and OTA");
     setup_camera(&cam_ready);
     start_OTA();
   }
+  // Serial.println("Starting websocket");
   webSocket.begin("68.183.44.212", 12012);
   webSocket.onEvent(webSocketEvent);
 }
@@ -173,8 +175,10 @@ unsigned long lastUpdate = millis();
 unsigned long main_loop_wait = millis();
 void loop() {
   webSocket.loop();
-  if (cam_ready)
+  if ((bootCount-1) % cam_capture_mod_value == 0) {
+    // Serial.println("OTA Handling Active");
     ArduinoOTA.handle();
+  }
 
   //Send measurements and go back to sleep unless camera is activated
   //Camera activate every 8 cycles
